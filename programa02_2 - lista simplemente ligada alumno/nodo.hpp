@@ -1,17 +1,15 @@
 #pragma once
 
-#include <iostream>
+#include "alumno.hpp"
 
 class Nodo {
     private:
         Nodo *sig;
     public:
-        int dato;
+        Alumno dato;
 
-        Nodo(int dato = 0, Nodo *sig = nullptr) {
-            this->dato = dato;
-            this->sig = sig;
-        }
+        Nodo(const Alumno& dato, Nodo* siguiente = nullptr)
+        : dato(dato), siguiente(siguiente) {}
 
-        friend class ListaSimple;
+    friend class ListaSimple;
 };

@@ -4,216 +4,216 @@
 #include "nodo.hpp"
 
 class ListaSimple {
-    private:
-        Nodo *h;
-        int tamanio;
+private:
+    Nodo* h;
+    int tamanio;
 
-    public:
-        // Constructor
-        ListaSimple() : h(nullptr), tamanio(0) {}
+public:
+    ListaSimple() : h(nullptr), tamanio(0) {}
 
-        // Destructor
-        ~ListaSimple() {
-            eliminarTodo();
-        }
+    ~ListaSimple() {
+        eliminarTodo();
+    }
 
-        void inicializar() {
-            eliminarTodo();
-            std::cout << ">> Lista reinicializada correctamente.\n";
-        }
+    void inicializar() {
+        eliminarTodo();
+        std::cout << ">> Lista reinicializada correctamente.\n";
+    }
 
-        // 1. Insertar inicio
-        Nodo* insertarInicio(int dato){
-            Nodo *nuevoNodo = new Nodo(dato, h);
+    Nodo* insertarInicio(const Alumno& alumno) {
+        Nodo* nuevoNodo = new Nodo(alumno, h);
+        h = nuevoNodo;
+        ++tamanio;
+        return nuevoNodo;
+    }
+
+    Nodo* insertarFinal(const Alumno& alumno) {
+        Nodo* nuevoNodo = new Nodo(alumno);
+
+        if (vacia()) {
             h = nuevoNodo;
-            tamanio++;
+            ++tamanio;
             return nuevoNodo;
         }
 
-        // 2. Insertar final
-        Nodo* insertarFinal(int dato){
-            Nodo *newNode = new Nodo(dato);
-
-            if (vacia()){
-                h = newNode;
-                tamanio++;
-                return newNode;
-            }
-
-            Nodo *aux = h;
-            while (aux->sig != nullptr) {
-                aux = aux->sig;
-            }
-            aux->sig = newNode;
-            tamanio++;
-            return newNode;
+        Nodo* aux = h;
+        while (aux->siguiente != nullptr) {
+            aux = aux->siguiente;
         }
 
-        // 3. Insertar en posicion
-        Nodo* insertarPosicion(int pos, int dato) {
-            if (pos < 0 || pos > tamanio) {
-                std::cout << ">> Posicion invalida.\n";
-                return nullptr;
-            }
+        aux->siguiente = nuevoNodo;
+        ++tamanio;
+        return nuevoNodo;
+    }
 
-            if (pos == 0) {
-                Nodo *aux = insertarInicio(dato);
-                return aux;
-            }
-
-            Nodo* nuevoNodo = new Nodo(dato);
-            Nodo* aux = h;
-            for (int i = 0; i < pos - 1; ++i) {
-                aux = aux->sig;
-            }
-
-            nuevoNodo->sig = aux->sig;
-            aux->sig = nuevoNodo;
-
-            tamanio++;
-            return nuevoNodo;
-        }
-
-        // 4. Buscar un elemento
-        Nodo* buscar(int dato){
-            Nodo *aux = h;
-            int cont = 0;
-            while (aux){
-                if (aux->dato == dato){
-                    std::cout << ">> Valor: " << dato << " encontrado en el lugar " << cont << "." << std::endl;
-                    return aux;
-                }
-                cont++;
-                aux = aux->sig;
-            }
-            std::cout << "No se encontro el valor en la lista" << std::endl;
+    Nodo* insertarPosicion(int pos, const Alumno& alumno) {
+        if (pos < 0 || pos > tamanio) {
+            std::cout << ">> Posicion invalida.\n";
             return nullptr;
         }
 
-        // 5. Eliminar elemento
-        bool eliminar(int value) {
-            if (vacia()){
-                return false;
-            }
-            Nodo * aux = h;
+        if (pos == 0) {
+            return insertarInicio(alumno);
+        }
 
-            if (h->dato == value) {
-                aux = h;
-                h = h->sig;
-                delete aux;
-                tamanio--;
-                return true;
+        Nodo* nuevoNodo = new Nodo(alumno);
+        Nodo* aux = h;
+
+        for (int i = 0; i < pos - 1; ++i) {
+            aux = aux->siguiente;
+        }
+
+        nuevoNodo->siguiente = aux->siguiente;
+        aux->siguiente = nuevoNodo;
+
+        ++tamanio;
+        return nuevoNodo;
+    }
+
+    // Los alumnos se identifican mediante su código.
+    Nodo* buscar(const std::string& codigo) const {
+        Nodo* aux = h;
+        int cont = 0;
+
+        while (aux != nullptr) {
+            if (aux->dato.getCodigo() == codigo) {
+                std::cout << ">> Alumno con codigo " << codigo
+                          << " encontrado en la posicion " << cont << ".\n";
+                return aux;
             }
 
-            Nodo *aux2 = nullptr;
-            while (aux->dato != value && aux->sig != nullptr){
-                aux2 = aux;
-                aux = aux->sig;
-                if (aux->dato == value){
-                    if (aux->sig == nullptr) {
-                        aux2->sig = nullptr;
-                        delete aux;
-                        tamanio--;
-                        return true;
-                    } else {
-                        aux2->sig = aux->sig;
-                        delete aux;
-                        tamanio--;
-                        return true;
-                    }
-                }
-            }
-            std::cout << "No se encontro el valor en la lista" << std::endl;
+            ++cont;
+            aux = aux->siguiente;
+        }
+
+        std::cout << ">> No se encontro un alumno con ese codigo.\n";
+        return nullptr;
+    }
+
+    bool eliminar(const std::string& codigo) {
+        if (vacia()) {
             return false;
         }
 
-        // 6. Eliminar todo
-        void eliminarTodo(bool verbose = false) {
-            if (vacia()){
-                if (verbose) std::cout << "La lista ya estaba vacía" << std::endl;
-                return;
+        if (h->dato.getCodigo() == codigo) {
+            Nodo* aux = h;
+            h = h->siguiente;
+            delete aux;
+            --tamanio;
+            return true;
+        }
+
+        Nodo* anterior = h;
+
+        while (anterior->siguiente != nullptr) {
+            Nodo* actual = anterior->siguiente;
+
+            if (actual->dato.getCodigo() == codigo) {
+                anterior->siguiente = actual->siguiente;
+                delete actual;
+                --tamanio;
+                return true;
             }
 
-            Nodo *aux = h;
-            while (h){
-                h = h->sig;
-                delete aux;
-                aux = h;
+            anterior = actual;
+        }
+
+        std::cout << ">> No se encontro un alumno con ese codigo.\n";
+        return false;
+    }
+
+    void eliminarTodo(bool verbose = false) {
+        if (vacia()) {
+            if (verbose) {
+                std::cout << ">> La lista ya estaba vacia.\n";
             }
-            if (verbose) std::cout << "La lista se ha eliminado correctamente." << std::endl;
             tamanio = 0;
+            return;
         }
 
-        // 7. esta vacia?
-        bool vacia(){
-            return h == nullptr;
+        while (h != nullptr) {
+            Nodo* aux = h;
+            h = h->siguiente;
+            delete aux;
         }
 
-        // 8. Mostrar todos los elementos
-        void mostrarTodo(){
-            if(vacia()){
-                std::cout << "La lista no contiene ningún elemento." << std::endl;
-                return;
-            }
+        tamanio = 0;
 
-            Nodo *ptr = h;
-            while (ptr->sig != nullptr){
-                std::cout << "[" << ptr->dato << "], ";
-                ptr = ptr->sig;
-            }
-            std::cout << "[" << ptr->dato << "]" << std::endl;
+        if (verbose) {
+            std::cout << ">> La lista se ha eliminado correctamente.\n";
+        }
+    }
+
+    bool vacia() const {
+        return h == nullptr;
+    }
+
+    void mostrarTodo() const {
+        if (vacia()) {
+            std::cout << ">> La lista no contiene ningun alumno.\n";
+            return;
         }
 
-        // 9. Primero
-        Nodo* primero(){
-            if (vacia()) return nullptr;
+        Nodo* ptr = h;
 
-            return h;
+        while (ptr != nullptr) {
+            ptr->dato.mostrarInformacion();
+            std::cout << "\n";
+            ptr = ptr->siguiente;
+        }
+    }
+
+    Nodo* primero() const {
+        return h;
+    }
+
+    Nodo* ultimo() const {
+        if (vacia()) {
+            return nullptr;
         }
 
-        // 10. Ultimo
-        Nodo* ultimo(){
-            if (vacia()) return nullptr;
-
-            Nodo *aux = h;
-            while(aux->sig) aux = aux->sig;
-            return aux;
+        Nodo* aux = h;
+        while (aux->siguiente != nullptr) {
+            aux = aux->siguiente;
         }
 
-        // 11. Obtener elemento anterior a un valor
-        Nodo* anterior(int valor) {
-            // Retorna nullptr si no existe una lista o no existe anterior
-            if (vacia() || h->dato == valor) {
-                return nullptr;
-            }
+        return aux;
+    }
 
-            Nodo* temp = h;
-            while (temp->sig != nullptr && temp->sig->dato != valor) {
-                temp = temp->sig;
-            }
-            // Retorna nullptr si no encontró el dato
-            if (temp->sig == nullptr) {
-                return nullptr;
-            }            
-            return temp;
+    Nodo* anterior(const std::string& codigo) const {
+        if (vacia() || h->dato.getCodigo() == codigo) {
+            return nullptr;
         }
 
-        // 12. Obtener elemento siguiente a un valor
-        Nodo* siguiente(int valor) {
-            Nodo* temp = h;
-            while (temp != nullptr && temp->dato != valor) {
-                temp = temp->sig;
-            }
+        Nodo* temp = h;
 
-            // Retorna nullptr si es el ultimo o penultimo elemento
-            if (temp == nullptr || temp->sig == nullptr) {
-                return nullptr;
-            }
-            return temp->sig;
+        while (temp->siguiente != nullptr &&
+               temp->siguiente->dato.getCodigo() != codigo) {
+            temp = temp->siguiente;
         }
 
-        // 13. Obtener tamaño de la lista
-        int getTamanio(){
-            return tamanio;
+        if (temp->siguiente == nullptr) {
+            return nullptr;
         }
+
+        return temp;
+    }
+
+    Nodo* siguiente(const std::string& codigo) const {
+        Nodo* temp = h;
+
+        while (temp != nullptr && temp->dato.getCodigo() != codigo) {
+            temp = temp->siguiente;
+        }
+
+        if (temp == nullptr || temp->siguiente == nullptr) {
+            return nullptr;
+        }
+
+        return temp->siguiente;
+    }
+
+    int getTamanio() const {
+        return tamanio;
+    }
 };
