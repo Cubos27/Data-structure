@@ -4,7 +4,7 @@
 
 class Nodo {
     private:
-        Nodo *sig;
+        Nodo *siguiente;
     public:
         Alumno dato;
 
