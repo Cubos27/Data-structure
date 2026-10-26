@@ -3,16 +3,16 @@
 #include <iostream>
 #include "gato.hpp"
 
-class Nodo {
+class NodoPila {
     private:
-        Nodo *sig;
+        NodoPila *sig;
     public:
-        Gato *dato;
+        Gato dato;
 
-        Nodo(Gato dato = 0, Nodo *sig = nullptr) {
+        NodoPila(const Gato& dato, NodoPila *sig = nullptr) {
             this->dato = dato;
             this->sig = sig;
         }
 
-        friend class ListaSimple;
+    friend class Pila;
 };
