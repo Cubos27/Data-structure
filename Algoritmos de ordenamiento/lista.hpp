@@ -215,7 +215,7 @@ public:
     }
 
     void intercambio(int i){
-        // Recibe un entero que representa el lugar a verificar lista[2]
+        // Recibe un entero que representa el lugar de la lista lista[2]
         // Intercambia solo datos con el contador y su siguiente
         Nodo *temp = h;
         int cont = 0;
@@ -223,7 +223,40 @@ public:
             temp = temp->siguiente;
             cont++;
         }
-        std::cout << temp->dato << std::endl;
-        // En esta parte se tiene que intercambiar los nodos
+
+        // Intercambio de datos
+        int datoTemp = temp->dato;
+        temp->dato = temp->siguiente->dato;
+        temp->siguiente->dato = datoTemp;
+    }
+
+    void intercambio_pos(int posA, int posB) {
+        if (posA == posB) return;
+
+        Nodo* a = buscar_posicion(posA);
+        Nodo* b = buscar_posicion(posB);
+
+        if (a && b) {
+            // Intercambio
+            int datoTemp = a->dato;
+            a->dato = b->dato;
+            b->dato = datoTemp;
+        }
+    }
+
+    Nodo* buscar_posicion(const int pos) {
+        Nodo* actual = h;
+        int cont = 0;
+
+        while (actual != nullptr) {
+            if (cont == pos) {
+                return actual;
+            }
+
+            actual = actual->siguiente;
+            cont++;
+        }
+
+        return nullptr;
     }
 };
